@@ -7,7 +7,7 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #2d89ef, #8e44ad);
+        background: linear-gradient(135deg, #00b09b, #96c93d);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -19,50 +19,47 @@
 
     .container {
         background: white;
-        padding: 30px;
+        padding: 40px;
         border-radius: 15px;
         box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        max-width: 500px;
+        max-width: 650px;
         width: 100%;
         text-align: center;
         animation: shadowPulse 3s infinite ease-in-out;
     }
 
     @keyframes shadowPulse {
-        0%, 100% {
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        50% {
-            box-shadow: 0 15px 30px rgba(0,0,0,0.35);
-        }
+        0%, 100% { box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        50% { box-shadow: 0 15px 30px rgba(0,0,0,0.35); }
     }
 
     .logo {
-        width: 80px;
+        width: 120px;
         height: auto;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     h2 {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         color: #333;
+        font-size: 28px;
     }
 
     input {
         width: 90%;
-        padding: 12px;
-        margin-bottom: 15px;
+        padding: 14px;
+        margin-bottom: 20px;
         border: 1px solid #ccc;
         border-radius: 8px;
-        font-size: 16px;
+        font-size: 18px;
     }
 
     button {
-        padding: 12px 25px;
+        padding: 14px 28px;
         border: none;
-        background: linear-gradient(90deg, #2d89ef, #8e44ad);
+        background: linear-gradient(90deg, #00b09b, #96c93d);
         color: white;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: bold;
         border-radius: 8px;
         cursor: pointer;
@@ -75,7 +72,7 @@
     }
 
     .result {
-        margin-top: 20px;
+        margin-top: 25px;
         display: none;
         animation: fadeIn 0.5s ease-in-out;
     }
@@ -83,13 +80,13 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 15px;
+        margin-top: 15px;
+        font-size: 16px;
     }
 
     table, th, td {
         border: 1px solid #ccc;
-        padding: 8px;
+        padding: 10px;
         text-align: left;
     }
 
@@ -106,23 +103,23 @@
     footer {
         margin-top: 20px;
         color: white;
-        font-size: 14px;
+        font-size: 15px;
         text-align: center;
         animation: fadeIn 1s ease-in-out;
     }
 
     @media (max-width: 480px) {
         .container {
-            padding: 20px;
+            padding: 25px;
         }
         input, button {
-            font-size: 14px;
+            font-size: 15px;
         }
         table {
-            font-size: 13px;
+            font-size: 14px;
         }
         .logo {
-            width: 60px;
+            width: 90px;
         }
     }
 </style>
@@ -133,31 +130,26 @@
     <img src="IMG_6051.png" alt="Logo" class="logo">
     <h2>Verifikasi TTE Surat</h2>
     <input type="text" id="nomorSurat" placeholder="Masukkan Nomor Surat">
-    <br>
-    <button onclick="verifikasi()">Verifikasi</button>
+    <button onclick="verifikasiSurat()">Verifikasi</button>
 
-    <div class="result" id="hasilVerifikasi">
+    <div class="result" id="hasil">
         <h3>Hasil Verifikasi</h3>
         <table>
             <tr>
                 <th>Nomor Surat</th>
-                <td id="noSurat"></td>
+                <td id="hasilNomor"></td>
             </tr>
             <tr>
                 <th>Tanggal Surat</th>
-                <td id="tglSurat"></td>
-            </tr>
-            <tr>
-                <th>Penerbit</th>
-                <td id="penerbit"></td>
+                <td id="hasilTanggal"></td>
             </tr>
             <tr>
                 <th>Perihal</th>
-                <td id="perihal"></td>
+                <td id="hasilPerihal"></td>
             </tr>
             <tr>
-                <th>Ditandatangani Oleh</th>
-                <td id="penandatangan"></td>
+                <th>Ditandatangani oleh</th>
+                <td id="hasilTtd"></td>
             </tr>
         </table>
     </div>
@@ -168,41 +160,44 @@
 </footer>
 
 <script>
-function verifikasi() {
-    let nomor = document.getElementById("nomorSurat").value.trim();
-    if(nomor === ""){
-        alert("Masukkan nomor surat terlebih dahulu!");
-        return;
-    }
-
-    const dataContoh = {
-        "001/TTE-DISKOMINFO/VIII/2025": {
-            noSurat: "001/TTE-DISKOMINFO/VIII/2025",
-            tglSurat: "12 Agustus 2025",
-            penerbit: "Dinas Komunikasi dan Informatika Kabupaten Sidomulyo",
-            perihal: "Undangan Rapat Koordinasi",
-            penandatangan: "Drs. Ahmad Syafrudin, M.Si - Kepala Dinas"
+    // Data contoh surat
+    const dataSurat = {
+        "001/KD/2025": {
+            tanggal: "12 Agustus 2025",
+            perihal: "Undangan Rapat Desa",
+            ttd: "Kepala Desa Sidomulyo"
         },
-        "002/TTE-DISKOMINFO/VIII/2025": {
-            noSurat: "002/TTE-DISKOMINFO/VIII/2025",
-            tglSurat: "10 Agustus 2025",
-            penerbit: "Dinas Pendidikan Kabupaten Sidomulyo",
-            perihal: "Pemberitahuan Kegiatan Workshop",
-            penandatangan: "Ir. Ratna Kusuma, M.Pd - Kepala Dinas"
+        "002/KD/2025": {
+            tanggal: "15 Agustus 2025",
+            perihal: "Pemberitahuan Kegiatan KKN",
+            ttd: "Sekretaris Desa Sidomulyo"
+        },
+        "003/KD/2025": {
+            tanggal: "18 Agustus 2025",
+            perihal: "Pengumuman Lomba 17 Agustus",
+            ttd: "Ketua Panitia HUT RI Desa Sidomulyo"
         }
     };
 
-    if(dataContoh[nomor]){
-        document.getElementById("noSurat").innerText = dataContoh[nomor].noSurat;
-        document.getElementById("tglSurat").innerText = dataContoh[nomor].tglSurat;
-        document.getElementById("penerbit").innerText = dataContoh[nomor].penerbit;
-        document.getElementById("perihal").innerText = dataContoh[nomor].perihal;
-        document.getElementById("penandatangan").innerText = dataContoh[nomor].penandatangan;
-        document.getElementById("hasilVerifikasi").style.display = "block";
-    } else {
-        alert("Nomor surat tidak ditemukan atau belum terverifikasi!");
+    function verifikasiSurat() {
+        const nomor = document.getElementById("nomorSurat").value.trim();
+        if (nomor === "") {
+            alert("Masukkan nomor surat terlebih dahulu!");
+            return;
+        }
+
+        const surat = dataSurat[nomor];
+        if (surat) {
+            document.getElementById("hasilNomor").innerText = nomor;
+            document.getElementById("hasilTanggal").innerText = surat.tanggal;
+            document.getElementById("hasilPerihal").innerText = surat.perihal;
+            document.getElementById("hasilTtd").innerText = surat.ttd;
+            document.getElementById("hasil").style.display = "block";
+        } else {
+            alert("Nomor surat tidak ditemukan!");
+            document.getElementById("hasil").style.display = "none";
+        }
     }
-}
 </script>
 
 </body>
