@@ -7,7 +7,7 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #87CEFA, #8e44ad); /* Biru langit -> Ungu */
+        background: linear-gradient(135deg, #87ceeb, #ffffff); /* Biru langit ke putih */
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -16,7 +16,6 @@
         margin: 0;
         padding: 20px;
     }
-
     .container {
         background: white;
         padding: 40px;
@@ -27,24 +26,20 @@
         text-align: center;
         animation: shadowPulse 3s infinite ease-in-out;
     }
-
     @keyframes shadowPulse {
         0%, 100% { box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         50% { box-shadow: 0 15px 30px rgba(0,0,0,0.35); }
     }
-
     .logo {
-        width: 150px; /* Logo lebih besar */
+        width: 160px; /* Lebih besar */
         height: auto;
         margin-bottom: 15px;
     }
-
     h2 {
         margin-bottom: 25px;
         color: #333;
         font-size: 28px;
     }
-
     input {
         width: 90%;
         padding: 14px;
@@ -53,11 +48,10 @@
         border-radius: 8px;
         font-size: 18px;
     }
-
     button {
         padding: 14px 28px;
         border: none;
-        background: linear-gradient(90deg, #87CEFA, #8e44ad);
+        background: linear-gradient(90deg, #87ceeb, #4682b4);
         color: white;
         font-size: 17px;
         font-weight: bold;
@@ -65,41 +59,45 @@
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     button:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0,0,0,0.2);
     }
-
     .result {
         margin-top: 25px;
         display: none;
         animation: fadeIn 0.5s ease-in-out;
     }
-
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
         font-size: 16px;
     }
-
     table, th, td {
         border: 1px solid #ccc;
         padding: 10px;
         text-align: left;
     }
-
     th {
         background: #f0f0f0;
         width: 40%;
     }
-
     @keyframes fadeIn {
         from {opacity: 0; transform: translateY(10px);}
         to {opacity: 1; transform: translateY(0);}
     }
-
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .btn-secondary {
+        background: #1e90ff;
+    }
+    .btn-wa {
+        background: #25d366;
+    }
     footer {
         margin-top: 20px;
         color: white;
@@ -107,7 +105,6 @@
         text-align: center;
         animation: fadeIn 1s ease-in-out;
     }
-
     @media (max-width: 480px) {
         .container {
             padding: 25px;
@@ -119,84 +116,90 @@
             font-size: 14px;
         }
         .logo {
-            width: 110px;
+            width: 120px;
         }
     }
 </style>
 </head>
 <body>
-
-<div class="container">
-    <img src="IMG_6051.png" alt="Logo" class="logo">
-    <h2>Verifikasi TTE Surat</h2>
-    <input type="text" id="nomorSurat" placeholder="Masukkan Nomor Surat">
-    <button onclick="verifikasi()">Verifikasi</button>
-
-    <div class="result" id="hasilVerifikasi">
-        <h3>Hasil Verifikasi</h3>
-        <table>
-            <tr>
-                <th>Nomor Surat</th>
-                <td id="hasilNomor"></td>
-            </tr>
-            <tr>
-                <th>Perihal</th>
-                <td id="hasilPerihal"></td>
-            </tr>
-            <tr>
-                <th>Tanggal Surat</th>
-                <td id="hasilTanggal"></td>
-            </tr>
-            <tr>
-                <th>Ditandatangani oleh</th>
-                <td id="hasilTtd"></td>
-            </tr>
-        </table>
+    <div class="container">
+        <img src="IMG_6051.png" alt="Logo" class="logo">
+        <h2>Verifikasi TTE Surat</h2>
+        <input type="text" id="nomorSurat" placeholder="Masukkan Nomor Surat">
+        <button onclick="verifikasi()">Verifikasi</button>
+        <div class="result" id="resultBox">
+            <table>
+                <tr><th>Nomor Surat</th><td id="hasilNomor"></td></tr>
+                <tr><th>Tanggal Surat</th><td id="hasilTanggal"></td></tr>
+                <tr><th>Perihal</th><td id="hasilPerihal"></td></tr>
+                <tr><th>Ditandatangani oleh</th><td id="hasilStatus"></td></tr>
+            </table>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="lihatFile()">📄 Lihat File</button>
+                <button class="btn-wa" onclick="kirimWA()">💬 WhatsApp</button>
+            </div>
+        </div>
     </div>
-</div>
-
-<footer>
-    KKN DESA SIDOMULYO 2025
-</footer>
+    <footer>KKN DESA SIDOMULYO 2025</footer>
 
 <script>
-    const dataSurat = [
-        {
-            nomor: "001/TTE/2025",
-            perihal: "Undangan Rapat Desa",
+    const dataSurat = {
+        "001/DS/2025": {
             tanggal: "10 Januari 2025",
-            ttd: "Kepala Desa Sidomulyo"
+            perihal: "Undangan Rapat Desa",
+            penandatangan: "Kepala Desa Sidomulyo",
+            file: "surat_001.pdf"
         },
-        {
-            nomor: "002/TTE/2025",
-            perihal: "Pemberitahuan Kerja Bakti",
+        "002/DS/2025": {
             tanggal: "15 Januari 2025",
-            ttd: "Sekretaris Desa Sidomulyo"
+            perihal: "Pemberitahuan Kegiatan KKN",
+            penandatangan: "Sekretaris Desa Sidomulyo",
+            file: "surat_002.pdf"
         },
-        {
-            nomor: "003/TTE/2025",
-            perihal: "Pengumuman Lomba 17 Agustus",
+        "003/DS/2025": {
             tanggal: "20 Januari 2025",
-            ttd: "Ketua Panitia HUT RI"
+            perihal: "Pengumuman Lomba Desa",
+            penandatangan: "Kepala Desa Sidomulyo",
+            file: "surat_003.pdf"
         }
-    ];
+    };
+
+    let fileUrl = "";
 
     function verifikasi() {
         const nomor = document.getElementById("nomorSurat").value.trim();
-        const hasil = dataSurat.find(s => s.nomor === nomor);
+        const resultBox = document.getElementById("resultBox");
 
-        if (hasil) {
-            document.getElementById("hasilNomor").innerText = hasil.nomor;
-            document.getElementById("hasilPerihal").innerText = hasil.perihal;
-            document.getElementById("hasilTanggal").innerText = hasil.tanggal;
-            document.getElementById("hasilTtd").innerText = hasil.ttd;
-            document.getElementById("hasilVerifikasi").style.display = "block";
+        if (dataSurat[nomor]) {
+            document.getElementById("hasilNomor").innerText = nomor;
+            document.getElementById("hasilTanggal").innerText = dataSurat[nomor].tanggal;
+            document.getElementById("hasilPerihal").innerText = dataSurat[nomor].perihal;
+            document.getElementById("hasilStatus").innerText = dataSurat[nomor].penandatangan;
+            fileUrl = dataSurat[nomor].file;
+            resultBox.style.display = "block";
         } else {
-            alert("Nomor surat tidak ditemukan!");
-            document.getElementById("hasilVerifikasi").style.display = "none";
+            alert("Nomor surat tidak ditemukan.");
+            resultBox.style.display = "none";
+        }
+    }
+
+    function lihatFile() {
+        if (fileUrl) {
+            window.open(fileUrl, "_blank");
+        } else {
+            alert("File tidak tersedia.");
+        }
+    }
+
+    function kirimWA() {
+        const nomor = document.getElementById("nomorSurat").value.trim();
+        if (nomor && dataSurat[nomor]) {
+            const pesan = `Halo, saya ingin menanyakan tentang surat dengan nomor ${nomor} perihal "${dataSurat[nomor].perihal}".`;
+            window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(pesan)}`, "_blank");
+        } else {
+            alert("Nomor surat belum diverifikasi.");
         }
     }
 </script>
-
 </body>
 </html>
